@@ -1,25 +1,44 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from "react";
+import { createStore, applyMiddleware } from "redux";
+import { Provider } from "react-redux";
+import createSagaMiddleware from "redux-saga";
+import { ThemeProvider } from "@material-ui/styles";
 
-function App() {
+
+// import thunk from "redux-thunk";
+
+import reducers from "./reducers";
+import Dashboard from "./containers/Dashboard";
+import saga from "./saga";
+import type from "./actions/constant";
+import Routes from "./routes";
+import theme from './theme'
+
+// const store = createStore(reducers, applyMiddleware(thunk)); // for thunk middle ware
+const sagaMiddleWare = createSagaMiddleware(); // for saga
+const reduxDevTools =
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__();
+const store = createStore(
+  reducers,
+  applyMiddleware(sagaMiddleWare),
+  reduxDevTools
+);
+
+sagaMiddleWare.run(saga);
+
+const App = () => {
+  // useEffect(() => {
+  //   store.dispatch({ type: type.GET_USER_REQUEST });
+  //   console.log(store.getState());
+  // }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={theme}>
+      <Provider store={store}>
+        <Routes />
+      </Provider>
+    </ThemeProvider>
   );
-}
+};
 
 export default App;
